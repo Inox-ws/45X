@@ -103,7 +103,9 @@ spring:
     show-sql: false
   flyway:
     enabled: true
-    locations: classpath:db/migration
+    # sqlserver/ carries migrations that use syntax H2 doesn't support (e.g. filtered
+    # indexes) - see V1.1__app_user_entra_object_id_index.sql.
+    locations: classpath:db/migration,classpath:db/migration/sqlserver
 
 x45:
   storage:

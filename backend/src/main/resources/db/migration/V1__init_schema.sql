@@ -14,10 +14,9 @@ CREATE TABLE app_user (
     version             BIGINT         NOT NULL DEFAULT 0,
     CONSTRAINT uk_app_user_email UNIQUE (email)
 );
--- Plain UNIQUE constraints in SQL Server reject a second NULL (unlike Postgres/MySQL,
--- which treat each NULL as distinct), and most users won't have an Entra object id
--- until their first login. A filtered index enforces uniqueness only when it's set.
-CREATE UNIQUE INDEX uk_app_user_entra_object_id ON app_user(entra_object_id) WHERE entra_object_id IS NOT NULL;
+-- The entra_object_id uniqueness rule is vendor-specific (SQL Server needs a filtered
+-- index to allow multiple NULLs; H2 doesn't support that syntax at all) - see
+-- db/migration/sqlserver/V1.1__... and db/migration/h2/V1.1__... .
 
 CREATE TABLE app_role (
     id                  BIGINT IDENTITY(1,1) PRIMARY KEY,
