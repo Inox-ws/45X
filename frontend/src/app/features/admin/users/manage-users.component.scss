@@ -1,0 +1,48 @@
+.error {
+  color: #b3261e;
+  font-size: 0.85rem;
+}
+
+.table-card {
+  padding: 1rem 1.25rem;
+  margin-bottom: 1rem;
+
+  &__table {
+    width: 100%;
+  }
+
+  &__empty {
+    color: #5f6b66;
+    text-align: center;
+    padding: 1rem 0;
+  }
+
+  &__roles-form {
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
+  }
+
+  &__roles-select {
+    width: 220px;
+  }
+
+  mat-chip {
+    margin-right: 0.25rem;
+  }
+}
+
+.form-card {
+  padding: 1rem 1.25rem;
+  max-width: 720px;
+
+  &__form {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+  }
+
+  mat-form-field {
+    width: 100%;
+  }
+}

@@ -1,0 +1,97 @@
+.shell {
+  height: 100vh;
+
+  &__sidenav {
+    width: 260px;
+    background: linear-gradient(180deg, #1b3a2f 0%, #2f6b4f 100%);
+    color: #fff;
+    border-right: none;
+    display: flex;
+    flex-direction: column;
+  }
+
+  &__brand {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.6rem;
+    padding: 1.25rem 1.5rem;
+  }
+
+  &__brand-logo {
+    max-width: 100%;
+    height: 40px;
+    width: auto;
+    object-fit: contain;
+    background: #ffffff;
+    border-radius: 6px;
+    padding: 0.35rem 0.6rem;
+  }
+
+  &__brand-name {
+    font-size: 0.9rem;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    color: rgba(255, 255, 255, 0.85);
+    text-transform: uppercase;
+  }
+
+  &__nav {
+    padding-top: 0;
+
+    ::ng-deep .mat-mdc-list-item {
+      color: rgba(255, 255, 255, 0.88);
+    }
+
+    ::ng-deep .mat-icon {
+      color: rgba(255, 255, 255, 0.7);
+    }
+  }
+
+  &__nav-item {
+    &--active {
+      background: rgba(255, 255, 255, 0.14);
+    }
+
+    &--child {
+      padding-left: 1.5rem;
+      font-size: 0.9em;
+    }
+  }
+
+  &__nav-children {
+    display: flex;
+    flex-direction: column;
+  }
+
+  &__content {
+    background: #f4f6f5;
+  }
+
+  &__toolbar {
+    background: #ffffff;
+    color: #1b3a2f;
+    border-bottom: 1px solid #e2e6e4;
+  }
+
+  &__toolbar-title {
+    font-weight: 600;
+    font-size: 1rem;
+  }
+
+  &__spacer {
+    flex: 1 1 auto;
+  }
+
+  &__user-roles {
+    font-size: 0.8rem;
+    opacity: 0.7;
+  }
+
+  &__main {
+    padding: 1.5rem;
+    height: calc(100vh - 64px);
+    overflow-y: auto;
+    box-sizing: border-box;
+  }
+}

@@ -1,0 +1,16 @@
+<app-page-header title="Dashboard" subtitle="KPIs, credit summary, compliance alerts"></app-page-header>
+
+<div class="kpi-grid">
+  @for (kpi of kpis; track kpi.label) {
+    <mat-card class="kpi-card">
+      <mat-icon class="kpi-card__icon">{{ kpi.icon }}</mat-icon>
+      <div class="kpi-card__value">{{ kpi.value }}</div>
+      <div class="kpi-card__label">{{ kpi.label }}</div>
+    </mat-card>
+  }
+</div>
+
+<p class="dashboard-note">
+  Charts (Credit Overview, Eligible Wattage Trend, FEOC Compliance Status, Customer/Supplier Summary,
+  Audit Dashboard, Alerts) are wired up against the reporting API in Milestone 7 (Section 10).
+</p>

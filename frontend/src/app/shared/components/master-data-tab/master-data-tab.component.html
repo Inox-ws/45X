@@ -1,0 +1,91 @@
+<mat-card class="table-card">
+  @if (loading()) {
+    <mat-spinner diameter="32"></mat-spinner>
+  } @else {
+    <table mat-table [dataSource]="rows()" class="table-card__table">
+      @for (field of fields; track field.key) {
+        @if (!field.hiddenInTable) {
+          <ng-container [matColumnDef]="field.key">
+            <th mat-header-cell *matHeaderCellDef>{{ field.label }}</th>
+            <td mat-cell *matCellDef="let row">{{ cellValue(row, field.key) }}</td>
+          </ng-container>
+        }
+      }
+      <ng-container matColumnDef="actions">
+        <th mat-header-cell *matHeaderCellDef></th>
+        <td mat-cell *matCellDef="let row">
+          <button mat-button (click)="startEdit(row)">Edit</button>
+          @if (supportsDelete) {
+            <button mat-button color="warn" (click)="remove(row)">Delete</button>
+          }
+        </td>
+      </ng-container>
+
+      <tr mat-header-row *matHeaderRowDef="tableColumns"></tr>
+      <tr mat-row *matRowDef="let row; columns: tableColumns;"></tr>
+    </table>
+    @if (rows().length === 0) {
+      <p class="table-card__empty">No records yet.</p>
+    }
+  }
+</mat-card>
+
+<mat-card class="form-card">
+  <h3>{{ editingId() === null ? 'Add' : 'Edit' }} {{ entityLabel }}</h3>
+  <form [formGroup]="form" (ngSubmit)="save()" class="form-card__form">
+    @for (field of fields; track field.key) {
+      <div class="form-card__field">
+        @switch (field.type) {
+          @case ('select') {
+            <mat-form-field appearance="outline">
+              <mat-label>{{ field.label }}</mat-label>
+              <mat-select [formControlName]="field.key">
+                @for (option of field.options; track option.value) {
+                  <mat-option [value]="option.value">{{ option.label }}</mat-option>
+                }
+              </mat-select>
+            </mat-form-field>
+          }
+          @case ('checkbox') {
+            <mat-checkbox [formControlName]="field.key">{{ field.label }}</mat-checkbox>
+          }
+          @case ('textarea') {
+            <mat-form-field appearance="outline">
+              <mat-label>{{ field.label }}</mat-label>
+              <textarea matInput [formControlName]="field.key"></textarea>
+            </mat-form-field>
+          }
+          @case ('date') {
+            <mat-form-field appearance="outline">
+              <mat-label>{{ field.label }}</mat-label>
+              <input matInput type="date" [formControlName]="field.key" />
+            </mat-form-field>
+          }
+          @case ('number') {
+            <mat-form-field appearance="outline">
+              <mat-label>{{ field.label }}</mat-label>
+              <input matInput type="number" [formControlName]="field.key" />
+            </mat-form-field>
+          }
+          @default {
+            <mat-form-field appearance="outline">
+              <mat-label>{{ field.label }}</mat-label>
+              <input matInput type="text" [formControlName]="field.key" />
+            </mat-form-field>
+          }
+        }
+      </div>
+    }
+
+    @if (errorMessage()) {
+      <p class="form-card__error">{{ errorMessage() }}</p>
+    }
+
+    <div class="form-card__actions">
+      <button mat-button type="button" (click)="startCreate()">Clear</button>
+      <button mat-flat-button color="primary" type="submit">
+        {{ editingId() === null ? 'Add' : 'Save changes' }}
+      </button>
+    </div>
+  </form>
+</mat-card>

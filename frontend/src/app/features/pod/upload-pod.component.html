@@ -1,0 +1,46 @@
+<app-page-header title="Upload POD" subtitle="Upload a proof-of-delivery or shipping document and link it to an invoice"></app-page-header>
+
+@if (!result()) {
+  <mat-card class="upload-card">
+    <form [formGroup]="form" class="upload-card__form">
+      <mat-form-field appearance="outline">
+        <mat-label>Invoice ID</mat-label>
+        <input matInput type="number" formControlName="invoiceId" />
+        @if (form.controls.invoiceId.invalid && form.controls.invoiceId.touched) {
+          <mat-error>Enter the invoice this document belongs to.</mat-error>
+        }
+      </mat-form-field>
+    </form>
+
+    <input #fileInput type="file" accept=".pdf,.png,.jpg,.jpeg" (change)="onFileSelected($event)" hidden />
+    <button mat-stroked-button (click)="fileInput.click()" [disabled]="submitting()">
+      <mat-icon>upload_file</mat-icon>
+      Choose file
+    </button>
+    @if (selectedFileName()) {
+      <span class="upload-card__filename">{{ selectedFileName() }}</span>
+    }
+    @if (fileError()) {
+      <p class="upload-card__error">{{ fileError() }}</p>
+    }
+    @if (submitError()) {
+      <p class="upload-card__error">{{ submitError() }}</p>
+    }
+
+    <button mat-flat-button color="primary" [disabled]="!selectedFileName() || submitting()" (click)="upload()">
+      @if (submitting()) {
+        <mat-spinner diameter="20"></mat-spinner>
+      } @else {
+        Upload POD
+      }
+    </button>
+  </mat-card>
+}
+
+@if (result()) {
+  <mat-card class="done-card">
+    <mat-icon class="done-card__icon">check_circle</mat-icon>
+    <p>Uploaded <strong>{{ result()!.fileName }}</strong> and linked it to invoice #{{ result()!.invoiceId }}.</p>
+    <button mat-stroked-button (click)="startOver()">Upload another</button>
+  </mat-card>
+}

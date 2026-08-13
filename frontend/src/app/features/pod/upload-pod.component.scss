@@ -1,0 +1,27 @@
+.upload-card, .done-card {
+  padding: 1.5rem;
+  max-width: 480px;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.75rem;
+}
+
+.upload-card__form {
+  width: 100%;
+}
+
+.upload-card__filename {
+  color: #5f6b66;
+  font-size: 0.9rem;
+}
+
+.upload-card__error {
+  color: #b3261e;
+  font-size: 0.85rem;
+  margin: 0;
+}
+
+.done-card__icon {
+  color: #2f6b4f;
+}

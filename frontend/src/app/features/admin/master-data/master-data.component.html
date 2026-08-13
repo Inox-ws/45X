@@ -1,0 +1,19 @@
+<app-page-header title="Master Data" subtitle="Suppliers, customers, credit rates, the FEOC/PFE list, and materials"></app-page-header>
+
+<mat-tab-group>
+  <mat-tab label="Suppliers">
+    <app-master-data-tab [fields]="supplierFields" [service]="supplierService" entityLabel="supplier"></app-master-data-tab>
+  </mat-tab>
+  <mat-tab label="Customers">
+    <app-master-data-tab [fields]="customerFields" [service]="customerService" entityLabel="customer"></app-master-data-tab>
+  </mat-tab>
+  <mat-tab label="Credit Rates">
+    <app-master-data-tab [fields]="creditRateFields" [service]="creditRateService" entityLabel="credit rate"></app-master-data-tab>
+  </mat-tab>
+  <mat-tab label="FEOC List">
+    <app-master-data-tab [fields]="feocListFields" [service]="feocListService" [supportsDelete]="true" entityLabel="FEOC entry"></app-master-data-tab>
+  </mat-tab>
+  <mat-tab label="Materials">
+    <app-master-data-tab [fields]="materialFields" [service]="materialService" [supportsDelete]="true" entityLabel="material"></app-master-data-tab>
+  </mat-tab>
+</mat-tab-group>

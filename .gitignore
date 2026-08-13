@@ -1,0 +1,38 @@
+# Backend (Maven/Java)
+backend/target/
+*.class
+*.jar
+!.mvn/wrapper/maven-wrapper.jar
+backend/data/blob-storage/
+
+# Frontend (Angular/Node)
+frontend/node_modules/
+frontend/dist/
+frontend/.angular/
+frontend/coverage/
+npm-debug.log*
+
+# IDE
+.idea/
+.vscode/
+.claude/
+*.iml
+.DS_Store
+Thumbs.db
+
+# Env / secrets - never commit real values
+.env
+.env.*
+*.local.yml
+**/application-local-secrets.yml
+
+# Azure / infra local state
+infra/.terraform/
+infra/*.tfstate
+infra/*.tfstate.backup
+infra/*.tfvars
+!infra/*.tfvars.example
+
+# Logs
+*.log
+logs/

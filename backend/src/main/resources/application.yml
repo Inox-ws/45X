@@ -1,0 +1,134 @@
+spring:
+  application:
+    name: x45-portal-backend
+  profiles:
+    active: local
+  jackson:
+    default-property-inclusion: non_null
+    serialization:
+      write-dates-as-timestamps: false
+  servlet:
+    multipart:
+      max-file-size: 25MB
+      max-request-size: 26MB
+
+server:
+  port: 8080
+  error:
+    include-message: always
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info
+  endpoint:
+    health:
+      show-details: when-authorized
+      probes:
+        enabled: true
+
+springdoc:
+  api-docs:
+    path: /v3/api-docs
+  swagger-ui:
+    path: /swagger-ui.html
+    enabled: true
+
+x45:
+  cors:
+    allowed-origins:
+      - http://localhost:4200
+  storage:
+    upload:
+      max-size-mb: 25
+
+---
+# Local development profile: H2 in-memory DB, no real Azure/Entra dependency.
+# Run with: mvn spring-boot:run  (this is the default active profile)
+spring:
+  config:
+    activate:
+      on-profile: local
+  datasource:
+    url: jdbc:h2:mem:x45portal;DB_CLOSE_DELAY=-1;MODE=MSSQLServer
+    driver-class-name: org.h2.Driver
+    username: sa
+    password: ""
+  jpa:
+    hibernate:
+      ddl-auto: none
+    show-sql: false
+  flyway:
+    enabled: true
+    locations: classpath:db/migration
+  h2:
+    console:
+      enabled: true
+      path: /h2-console
+
+x45:
+  local-auth:
+    jwt:
+      # Dev-only HS256 signing secret, fine to commit since this profile only ever
+      # runs against an in-memory H2 DB with seeded demo data - never reused for
+      # the 'azure' profile. Override with X45_LOCAL_JWT_SECRET if you want your
+      # own, but there is no real-world value at risk here either way.
+      secret: ${X45_LOCAL_JWT_SECRET:dev-only-local-fallback-signing-secret-do-not-use-in-azure-profile}
+      expiration-minutes: 480
+  storage:
+    local:
+      base-dir: ${X45_LOCAL_STORAGE_DIR:./data/blob-storage}
+
+springdoc:
+  swagger-ui:
+    enabled: true
+
+---
+# Azure profile: Azure SQL Database + Managed Identity. Real values supplied via
+# environment variables / Azure App Service configuration / Key Vault references
+# (see Section 15 and infra/). Never commit real connection strings.
+spring:
+  config:
+    activate:
+      on-profile: azure
+  datasource:
+    url: ${X45_DB_URL}
+    username: ${X45_DB_USERNAME:}
+    password: ${X45_DB_PASSWORD:}
+    driver-class-name: com.microsoft.sqlserver.jdbc.SQLServerDriver
+  jpa:
+    hibernate:
+      ddl-auto: none
+    show-sql: false
+  flyway:
+    enabled: true
+    locations: classpath:db/migration
+
+x45:
+  storage:
+    azure:
+      account-url: ${X45_STORAGE_ACCOUNT_URL}
+      sas-ttl-minutes: 15
+  ocr:
+    document-intelligence:
+      # PLACEHOLDER - set per environment (Section 9, Section 15).
+      endpoint: ${X45_DOC_INTELLIGENCE_ENDPOINT:https://PLACEHOLDER.cognitiveservices.azure.com}
+      api-version: 2024-11-30
+      poll-timeout-seconds: 60
+  cors:
+    allowed-origins:
+      - ${X45_FRONTEND_ORIGIN}
+  entra:
+    # Neither of these is a secret: tenant-id is the Entra tenant GUID (or
+    # primary domain), api-audience is the backend API app registration's
+    # Application ID URI or client ID. The resource server only validates
+    # incoming tokens, so no client secret is ever needed here.
+    # Both default to the real INOX Solar Americas tenant / "45X Portal API" app
+    # registration created via infra/azure-deployment.md Section 1a.
+    tenant-id: ${X45_ENTRA_TENANT_ID:cc53b754-b4f2-454d-8e85-644309d1354c}
+    api-audience: ${X45_ENTRA_API_AUDIENCE:api://8c4dc697-bf4f-451e-a055-a6fddafe9541}
+
+springdoc:
+  swagger-ui:
+    enabled: false

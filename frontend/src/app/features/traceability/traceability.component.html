@@ -1,0 +1,90 @@
+<app-page-header title="Traceability" subtitle="Supplier -> Cell -> Module -> Invoice -> Customer - drill down from any node"></app-page-header>
+
+<mat-card class="search-card">
+  <form [formGroup]="form" (ngSubmit)="search()" class="search-card__form">
+    <mat-form-field appearance="outline">
+      <mat-label>Search by</mat-label>
+      <mat-select formControlName="anchor">
+        <mat-option value="cells">Cell serial number</mat-option>
+        <mat-option value="modules">Module serial number</mat-option>
+        <mat-option value="invoices">Invoice number</mat-option>
+      </mat-select>
+    </mat-form-field>
+
+    <mat-form-field appearance="outline" class="search-card__value">
+      <mat-label>Value</mat-label>
+      <input matInput formControlName="value" />
+    </mat-form-field>
+
+    <button mat-flat-button color="primary" type="submit" [disabled]="loading()">
+      @if (loading()) {
+        <mat-spinner diameter="20"></mat-spinner>
+      } @else {
+        <mat-icon>search</mat-icon>
+      }
+      Trace
+    </button>
+  </form>
+  @if (errorMessage()) {
+    <p class="search-card__error">{{ errorMessage() }}</p>
+  }
+</mat-card>
+
+@if (chain(); as result) {
+  @for (module of result.modules; track module.id) {
+    <mat-card class="chain-card">
+      <h2><mat-icon>view_module</mat-icon> Module {{ module.moduleSerialNumber }}</h2>
+      <p>Wattage: {{ module.wattage }} W @if (module.productionDate) { &middot; Produced {{ module.productionDate }} }</p>
+
+      <h3>Cells built into this module</h3>
+      @if (module.cells.length === 0) {
+        <p class="chain-card__empty">No cells linked to this module yet.</p>
+      } @else {
+        <table class="chain-table">
+          <thead>
+            <tr><th>Cell Serial</th><th>Batch/Lot</th><th>Wattage</th><th>Origin</th><th>FEOC</th><th>Supplier</th></tr>
+          </thead>
+          <tbody>
+            @for (cell of module.cells; track cell.id) {
+              <tr>
+                <td>{{ cell.cellSerialNumber }}</td>
+                <td>{{ cell.batch }} / {{ cell.lot }}</td>
+                <td>{{ cell.wattage }} W</td>
+                <td>{{ cell.countryOfOrigin }}</td>
+                <td>
+                  <mat-chip [class.chain-table__feoc--pass]="cell.feocStatus === 'PASS'"
+                            [class.chain-table__feoc--fail]="cell.feocStatus === 'FAIL'">
+                    {{ cell.feocStatus }}
+                  </mat-chip>
+                </td>
+                <td>{{ cell.supplier.name }} ({{ cell.supplier.countryOfOrigin }})</td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      }
+    </mat-card>
+  }
+
+  @if (result.invoices.length > 0) {
+    <mat-card class="chain-card">
+      <h2><mat-icon>receipt_long</mat-icon> Invoices</h2>
+      <table class="chain-table">
+        <thead>
+          <tr><th>Invoice #</th><th>Customer</th><th>Date</th><th>Amount</th><th>Status</th></tr>
+        </thead>
+        <tbody>
+          @for (invoice of result.invoices; track invoice.id) {
+            <tr>
+              <td>{{ invoice.invoiceNumber }}</td>
+              <td>{{ invoice.customerName }}</td>
+              <td>{{ invoice.invoiceDate }}</td>
+              <td>{{ invoice.amount | number: '1.2-2' }} {{ invoice.currency }}</td>
+              <td>{{ invoice.status }}</td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </mat-card>
+  }
+}

@@ -1,0 +1,57 @@
+.upload-card, .review-card, .done-card {
+  padding: 1.5rem;
+  max-width: 640px;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.upload-card__filename {
+  color: #5f6b66;
+  font-size: 0.9rem;
+}
+
+.upload-card__error {
+  color: #b3261e;
+  font-size: 0.85rem;
+  margin: 0;
+}
+
+.review-card__hint {
+  margin: 0 0 0.5rem;
+  color: #5f6b66;
+  font-size: 0.85rem;
+}
+
+.review-card__actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.5rem;
+  margin-top: 0.5rem;
+}
+
+.review-form {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 0 1rem;
+}
+
+.line-items {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.85rem;
+
+  th, td {
+    text-align: left;
+    padding: 0.4rem 0.6rem;
+    border-bottom: 1px solid #e2e6e4;
+  }
+}
+
+.done-card {
+  align-items: flex-start;
+
+  &__icon {
+    color: #2f6b4f;
+  }
+}

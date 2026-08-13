@@ -1,0 +1,110 @@
+<app-page-header title="Upload Invoice" subtitle="Upload an AR invoice (PDF/Excel); OCR pre-fills the fields below for you to confirm"></app-page-header>
+
+@if (stage() === 'select' || stage() === 'uploading') {
+  <mat-card class="upload-card">
+    <input #fileInput type="file" accept=".pdf,.xlsx" (change)="onFileSelected($event)" hidden />
+    <button mat-stroked-button (click)="fileInput.click()" [disabled]="stage() === 'uploading'">
+      <mat-icon>upload_file</mat-icon>
+      Choose file
+    </button>
+    @if (selectedFileName()) {
+      <span class="upload-card__filename">{{ selectedFileName() }}</span>
+    }
+    @if (fileError()) {
+      <p class="upload-card__error">{{ fileError() }}</p>
+    }
+    @if (submitError()) {
+      <p class="upload-card__error">{{ submitError() }}</p>
+    }
+    <button mat-flat-button color="primary" [disabled]="!selectedFileName() || stage() === 'uploading'" (click)="uploadAndExtract()">
+      @if (stage() === 'uploading') {
+        <mat-spinner diameter="20"></mat-spinner>
+      } @else {
+        Upload &amp; extract
+      }
+    </button>
+  </mat-card>
+}
+
+@if (stage() === 'review' || stage() === 'saving') {
+  <mat-card class="review-card">
+    <h2>Confirm invoice details</h2>
+    <p class="review-card__hint">Pre-filled from OCR - review and correct anything before saving.</p>
+
+    <form [formGroup]="form" class="review-form">
+      <mat-form-field appearance="outline">
+        <mat-label>Invoice number</mat-label>
+        <input matInput formControlName="invoiceNumber" />
+      </mat-form-field>
+
+      <mat-form-field appearance="outline">
+        <mat-label>Invoice date</mat-label>
+        <input matInput [matDatepicker]="picker" formControlName="invoiceDate" />
+        <mat-datepicker-toggle matIconSuffix [for]="picker"></mat-datepicker-toggle>
+        <mat-datepicker #picker></mat-datepicker>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline">
+        <mat-label>Customer</mat-label>
+        <mat-select formControlName="customerId">
+          @for (customer of customers(); track customer.id) {
+            <mat-option [value]="customer.id">{{ customer.name }}</mat-option>
+          }
+        </mat-select>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline">
+        <mat-label>Amount</mat-label>
+        <input matInput type="number" formControlName="amount" />
+      </mat-form-field>
+
+      <mat-form-field appearance="outline">
+        <mat-label>Currency</mat-label>
+        <input matInput formControlName="currency" />
+      </mat-form-field>
+    </form>
+
+    @if (extracted()?.lineItems?.length) {
+      <h3>Extracted line items</h3>
+      <table class="line-items">
+        <thead>
+          <tr><th>Description</th><th>Qty</th><th>Unit price</th><th>Amount</th><th>Wattage</th></tr>
+        </thead>
+        <tbody>
+          @for (item of extracted()!.lineItems; track $index) {
+            <tr>
+              <td>{{ item.description }}</td>
+              <td>{{ item.quantity }}</td>
+              <td>{{ item.unitPrice }}</td>
+              <td>{{ item.amount }}</td>
+              <td>{{ item.wattage ?? '—' }}</td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    }
+
+    @if (submitError()) {
+      <p class="upload-card__error">{{ submitError() }}</p>
+    }
+
+    <div class="review-card__actions">
+      <button mat-button (click)="startOver()" [disabled]="stage() === 'saving'">Cancel</button>
+      <button mat-flat-button color="primary" (click)="save()" [disabled]="stage() === 'saving'">
+        @if (stage() === 'saving') {
+          <mat-spinner diameter="20"></mat-spinner>
+        } @else {
+          Save invoice
+        }
+      </button>
+    </div>
+  </mat-card>
+}
+
+@if (stage() === 'done' && savedInvoice()) {
+  <mat-card class="done-card">
+    <mat-icon class="done-card__icon">check_circle</mat-icon>
+    <p>Invoice <strong>{{ savedInvoice()!.invoiceNumber }}</strong> saved for {{ savedInvoice()!.customerName }}.</p>
+    <button mat-stroked-button (click)="startOver()">Upload another</button>
+  </mat-card>
+}

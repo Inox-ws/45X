@@ -1,0 +1,42 @@
+name: Deploy Backend to Azure App Service
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'backend/**'
+      - '.github/workflows/deploy-backend.yml'
+  workflow_dispatch: {}
+
+env:
+  AZURE_WEBAPP_NAME: inox-45x-api
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: backend
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up JDK 21
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '21'
+          cache: maven
+
+      - name: Build jar
+        run: mvn -B clean package
+
+      # Requires the AZURE_WEBAPP_PUBLISH_PROFILE secret: download the publish
+      # profile from the App Service resource in the Azure Portal
+      # (inox-45x-api -> Overview -> "Get publish profile") and add it as a
+      # GitHub Actions secret with this exact name.
+      - name: Deploy to Azure App Service
+        uses: azure/webapps-deploy@v3
+        with:
+          app-name: ${{ env.AZURE_WEBAPP_NAME }}
+          publish-profile: ${{ secrets.AZURE_WEBAPP_PUBLISH_PROFILE }}
+          package: backend/target/*.jar

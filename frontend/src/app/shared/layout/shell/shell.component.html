@@ -1,0 +1,57 @@
+<mat-sidenav-container class="shell">
+  <mat-sidenav mode="side" opened class="shell__sidenav">
+    <div class="shell__brand">
+      <img src="assets/inox-solar-americas-logo.png" alt="INOX Solar Americas" class="shell__brand-logo" />
+      <span class="shell__brand-name">45X Portal</span>
+    </div>
+
+    <mat-nav-list class="shell__nav">
+      @for (item of visibleNavItems(); track item.route) {
+        <a mat-list-item [routerLink]="item.route" routerLinkActive="shell__nav-item--active"
+           [routerLinkActiveOptions]="{ exact: false }" class="shell__nav-item">
+          <mat-icon matListItemIcon>{{ item.icon }}</mat-icon>
+          <span matListItemTitle>{{ item.label }}</span>
+        </a>
+        @if (item.children?.length) {
+          <div class="shell__nav-children">
+            @for (child of item.children; track child.route) {
+              <a mat-list-item [routerLink]="child.route" routerLinkActive="shell__nav-item--active"
+                 class="shell__nav-item shell__nav-item--child">
+                <mat-icon matListItemIcon>{{ child.icon }}</mat-icon>
+                <span matListItemTitle>{{ child.label }}</span>
+              </a>
+            }
+          </div>
+        }
+      }
+    </mat-nav-list>
+  </mat-sidenav>
+
+  <mat-sidenav-content class="shell__content">
+    <mat-toolbar class="shell__toolbar">
+      <span class="shell__toolbar-title">INOX Solar Americas &middot; 45X Advanced Manufacturing Production Credit</span>
+      <span class="shell__spacer"></span>
+      <button mat-button [matMenuTriggerFor]="userMenu" class="shell__user-menu">
+        <mat-icon>account_circle</mat-icon>
+        {{ user()?.displayName }}
+      </button>
+      <mat-menu #userMenu="matMenu">
+        <div class="shell__user-roles" mat-menu-item disabled>
+          {{ user()?.email }}
+        </div>
+        <button mat-menu-item disabled>
+          <mat-icon>lock</mat-icon>
+          Change Password
+        </button>
+        <button mat-menu-item (click)="signOut()">
+          <mat-icon>logout</mat-icon>
+          Sign out
+        </button>
+      </mat-menu>
+    </mat-toolbar>
+
+    <main class="shell__main">
+      <router-outlet></router-outlet>
+    </main>
+  </mat-sidenav-content>
+</mat-sidenav-container>
